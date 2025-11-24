@@ -35,7 +35,7 @@ public:
         return root;
     }
 
-    void printMinMax() 
+    void printMinMax() const
     {
         std::cout << "min node " << min(root)->number << "\n";
         std::cout << "max node " << max(root)->number << "\n";
@@ -104,36 +104,39 @@ void BinaryTree::deleteNode(int num)
     if ((nodeToDelete->right != nullptr && nodeToDelete->left != nullptr))
     {
         //Node has two children
-        Node* minNode = min(nodeToDelete->right); // Get the tinniest node on the right side of the tree/node parameter 
-
-        if (minNode == nullptr)
-        {
-            minNode = nodeToDelete->right;
-        }
+        Node* minNode = min(nodeToDelete->right); // Get the tinniest node on the right side of the tree
 
         nodeToDelete->number = minNode->number; // Switch the data that u want removed with the minNode data
-        
-        //Check if minNode has any children
-        if (minNode->right != nullptr)
+
+        if (minNode == minNode->parent->right) //child is right of parent 
         {
-            //Switch the parent pointer of minNode child to point towards parent of minNode
-            minNode->right->parent = minNode->parent;
-
-            //Switch pointer of minNode parent too point towards child of minNode
-            minNode->parent->right = minNode->right;
+            if (minNode->right != nullptr) //Always check if minNode has a right child, its unable to have a left child since its the smallest in the tree
+            {
+                minNode->right->parent = minNode->parent;
+                minNode->parent->right = minNode->right;
+            }
+            else
+            {
+                minNode->parent->right = nullptr;
+            }
         }
-
-        std::cout << "This thing has two children!!!" << "\n";
-
-        minNode->parent->left = nullptr;
-
+        else if(minNode == minNode->parent->left) //child is left of parent
+        {
+            if (minNode->right != nullptr)  
+            {
+                minNode->right->parent = minNode->parent;
+                minNode->parent->left = minNode->right;
+            }
+            else
+            {
+                minNode->parent->left = nullptr;
+            }
+        }
         delete minNode;
     }
     else if ((nodeToDelete->left && !nodeToDelete->right) || (!nodeToDelete->left && nodeToDelete->right))
     {
         //node only has only one child
-        std::cout << "This thing has only one child..." << "\n";
-       
         if (nodeToDelete->number < nodeToDelete->parent->number)
         {
             if (nodeToDelete->left != nullptr)
@@ -165,8 +168,6 @@ void BinaryTree::deleteNode(int num)
     }
     else
     {
-        //node has no children
-        std::cout << "This thing has NO CHILDREN..." << "\n";
         if (nodeToDelete->number < nodeToDelete->parent->number)
             nodeToDelete->parent->left = nullptr;
         else if (nodeToDelete->number > nodeToDelete->parent->number)
@@ -292,4 +293,9 @@ Node* BinaryTree::min(Node* startNode) const
     return minNode;
 }
 
+
+int main()
+{
+    return 0;
+}
 
